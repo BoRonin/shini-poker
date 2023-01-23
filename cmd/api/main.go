@@ -13,7 +13,7 @@ const webPort = "3000"
 
 func main() {
     app := fiber.New()
-    api.Get("/hi", handlers.Hi)
+    app.Get("/hi", handlers.Hi)
 
     postgres.ConnectToDB()
 
