@@ -13,7 +13,7 @@ services:
             mode: replicated
             replicas: 1
         environment:
-            DSN: "host=postgres port=5432 user=postgres password=password dbname=asteroids sslmode=disable timezone=UTC connect_timeout=5"
+            DSN: "host=postgres port=5432 user=postgres password=password dbname=poker sslmode=disable timezone=UTC connect_timeout=5"
         depends_on:
             -   postgres
 
@@ -30,6 +30,6 @@ services:
         environment:
             POSTGRES_USER: postgres
             POSTGRES_PASSWORD: password
-            POSTGRES_DB: asteroids
+            POSTGRES_DB: poker
         volumes:
             -   ./db-data/postgres/:/var/lib/postgresql/data/
