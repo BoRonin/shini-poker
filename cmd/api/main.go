@@ -1,23 +1,40 @@
 package main
 
 import (
-    "fmt"
-    "github.com/gofiber/fiber/v2"
-    "log"
-    "shini/cmd/api/handlers"
-    "shini/storage/postgres"
+	"fmt"
+	"log"
+	"shini/cmd/api/handlers"
+	"shini/storage/postgres"
+
+	"github.com/gofiber/fiber/v2"
 )
 
 const webPort = "3000"
 
-
 func main() {
-    app := fiber.New()
-    app.Get("/hi", handlers.Hi)
+	app := fiber.New()
+	//TO DO:
+	//Register
+	//Login
+	//Create game
+	//Add a player to a game
+	//Register a win
+	//Add chips
+	//Finish the game and count money
+	//Get stats
+	//
+	app.Get("/hi", handlers.Hi)
+	app.Post("/register", handlers.Register)
+	app.Post("/login", handlers.Login)
 
-    postgres.ConnectToDB()
+	logged := app.Group("")
+	logged.Post("/register", handlers.Register)
+	logged.Post("/addchips/:id", handlers.AddChips)
+	logged.Post("/win/:id", handlers.Win)
+	logged.Post("/finishgame/:id", handlers.FinishGame)
+	logged.Get("/getstats", handlers.GetStats)
 
-    log.Fatal(app.Listen(fmt.Sprintf(":%s", webPort)))
+	postgres.ConnectToDB()
+
+	log.Fatal(app.Listen(fmt.Sprintf(":%s", webPort)))
 }
-
-
