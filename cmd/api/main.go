@@ -24,11 +24,10 @@ func main() {
 	//Get stats
 	//
 	app.Get("/hi", handlers.Hi)
-	app.Post("/register", handlers.Register)
+    app.Post("/register", handlers.Register)
 	app.Post("/login", handlers.Login)
 
 	logged := app.Group("")
-	logged.Post("/register", handlers.Register)
 	logged.Post("/addchips/:id", handlers.AddChips)
 	logged.Post("/win/:id", handlers.Win)
 	logged.Post("/finishgame/:id", handlers.FinishGame)
