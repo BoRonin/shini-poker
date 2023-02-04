@@ -14,7 +14,6 @@ const webPort = "3000"
 func main() {
 	app := fiber.New()
 	//TO DO:
-	//Register
 	//Login
 	//Create game
 	//Add a player to a game
@@ -22,7 +21,7 @@ func main() {
 	//Add chips
 	//Finish the game and count money
 	//Get stats
-	//
+
 	app.Get("/hi", handlers.Hi)
     app.Post("/register", handlers.Register)
 	app.Post("/login", handlers.Login)
@@ -32,6 +31,8 @@ func main() {
 	logged.Post("/win/:id", handlers.Win)
 	logged.Post("/finishgame/:id", handlers.FinishGame)
 	logged.Get("/getstats", handlers.GetStats)
+	logged.Post("/creategame", handlers.CreateGame)
+	logged.Post("/addplayer/:id", handlers.AddPlayer)
 
 	postgres.ConnectToDB()
 
