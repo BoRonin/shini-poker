@@ -13,5 +13,5 @@
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
-backend/db-data/
+shini-backend/db-data/
 .fleet/
