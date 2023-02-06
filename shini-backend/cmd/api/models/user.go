@@ -2,18 +2,19 @@ package models
 
 import (
 	"context"
-	"golang.org/x/crypto/bcrypt"
 	"shini/storage/postgres"
 	"time"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 type User struct {
 	Id        uint      `json:"id"`
-    CreatedAt time.Time `json:"created_at,omitempty"`
-	Login     string    `json:"login"`
-	Name      string    `json:"name"`
-	Email     string    `json:"email"`
-	Password  string    `json:"password"`
+	CreatedAt time.Time `json:"created_at,omitempty"`
+	Login     string    `json:"login,omitempty"`
+	Name      string    `json:"name,omitempty"`
+	Email     string    `json:"email,omitempty"`
+	Password  string    `json:"password,omitempty"`
 }
 
 func (u *User) SetPassword(password string) {
@@ -30,7 +31,7 @@ func (u *User) Create() error {
 	var id uint
 	stmt := "insert into users (name, login, password, created_at, email)" +
 		"values ($1, $2, $3, $4, $5) returning id"
-	err := postgres.DB.QueryRowContext(ctx, stmt, u.Name, u.Login, u.Password, u.CreatedAt, u.Email).Scan(&id)
+	err := postgres.DB.QueryRow(ctx, stmt, u.Name, u.Login, u.Password, u.CreatedAt, u.Email).Scan(&id)
 	if err != nil {
 		return err
 	}

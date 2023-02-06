@@ -15,15 +15,12 @@ func main() {
 	app := fiber.New()
 	//TO DO:
 	//Login
-	//Create game
-	//Add a player to a game
 	//Register a win
-	//Add chips
 	//Finish the game and count money
 	//Get stats
 
 	app.Get("/hi", handlers.Hi)
-    app.Post("/register", handlers.Register)
+	app.Post("/register", handlers.Register)
 	app.Post("/login", handlers.Login)
 
 	logged := app.Group("")

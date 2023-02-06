@@ -2,26 +2,27 @@ package postgres
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
 	"log"
 	"os"
 	"time"
+
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 var (
-	DB     *sql.DB
+	DB     *pgxpool.Pool
 	counts int64
 )
 
- const DBTimeout = time.Second * 3
+const DBTimeout = time.Second * 3
 
-func openDB(dsn string) (*sql.DB, error) {
-	db, err := sql.Open("pgx", dsn)
+func openDB(dsn string) (*pgxpool.Pool, error) {
+	db, err := pgxpool.New(context.Background(), dsn)
 	if err != nil {
 		return nil, err
 	}
-	err = db.Ping()
+	err = db.Ping(context.Background())
 	if err != nil {
 		return nil, err
 	}
@@ -49,11 +50,11 @@ func ConnectToDB() {
 		continue
 	}
 }
-func SetupDbTable(conn *sql.DB) {
+func SetupDbTable(conn *pgxpool.Pool) {
 	game := `SELECT EXISTS
     (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'game');`
 	var result bool
-    _ = conn.QueryRowContext(context.Background(), game).Scan(&result)
+	_ = conn.QueryRow(context.Background(), game).Scan(&result)
 
 	if !result {
 		stmt := `CREATE TABLE "game" (
@@ -113,7 +114,7 @@ func SetupDbTable(conn *sql.DB) {
 	      INSERT INTO combinations (name) VALUES ('all pass');
 
 	`
-		_, err := conn.Exec(stmt)
+		_, err := conn.Exec(context.Background(), stmt)
 		if err != nil {
 			fmt.Printf("Couldn't run query:%s", err.Error())
 			return
