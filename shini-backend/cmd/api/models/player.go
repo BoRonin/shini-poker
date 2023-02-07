@@ -37,3 +37,27 @@ func (p *Player) Create() error {
 	p.Id = id
 	return nil
 }
+
+func (p *Player) Win(winId int) error {
+	ctx, cancel := context.WithTimeout(context.Background(), postgres.DBTimeout)
+	defer cancel()
+	q := "insert into wins (player, combination) values ($1, $2)"
+	_, err := postgres.DB.Exec(ctx, q, p.Id, winId)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+func (p *Player) SetFinalChips() (int, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), postgres.DBTimeout)
+	defer cancel()
+	q := `update players set chips_final = $1 where id = $2 
+	returning (chips_final - chips) * (select game.multiplier from game                                  
+									  where id = $3)`
+	var score int
+	err := postgres.DB.QueryRow(ctx, q, p.ChipsFinal, p.Id, p.Game.Id).Scan(&score)
+	if err != nil {
+		return 0, err
+	}
+	return score, nil
+}

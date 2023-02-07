@@ -7,9 +7,6 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v2"
-	_ "github.com/jackc/pgconn"
-	_ "github.com/jackc/pgx/v4"
-	_ "github.com/jackc/pgx/v4/stdlib"
 )
 
 func Hi(c *fiber.Ctx) error {
@@ -90,15 +87,80 @@ func AddChips(c *fiber.Ctx) error {
 		"chips":   player.Chips,
 	})
 }
+
 func Win(c *fiber.Ctx) error {
+	var data map[string]string
+	if err := c.BodyParser(&data); err != nil {
+		c.Status(fiber.StatusBadRequest)
+		return c.JSON(err)
+	}
+	playerID, err := strconv.Atoi(c.Params("id"))
+	if err != nil {
+		c.Status(fiber.StatusBadRequest)
+		return c.JSON(err)
+	}
+	winId, _ := strconv.Atoi(data["combination"])
+	player := models.Player{
+		Id: uint(playerID),
+	}
+	if err := player.Win(winId); err != nil {
+		c.Status(fiber.StatusBadRequest)
+		c.JSON(err)
+	}
 	return c.JSON(fiber.Map{
-		"message": "This is win",
+		"message": fmt.Sprintf("A win for player with id %d and combination with id %d", player.Id, winId),
 	})
 }
+
 func FinishGame(c *fiber.Ctx) error {
-	return c.JSON(fiber.Map{
-		"message": "This is finishgame",
-	})
+	var data map[string]string
+	if err := c.BodyParser(&data); err != nil {
+		c.Status(fiber.StatusBadRequest)
+		return c.JSON(err)
+	}
+	gameid, err := strconv.Atoi(c.Params("id"))
+	if err != nil {
+		c.Status(fiber.StatusBadRequest)
+		return c.JSON(fiber.Map{
+			"message": "can't parse the game id",
+		})
+	}
+	game := models.Game{
+		Id: uint(gameid),
+	}
+	var playerList []models.Player
+	for k, v := range data {
+		id, err := strconv.Atoi(k)
+		if err != nil {
+			c.Status(fiber.StatusBadRequest)
+			return c.JSON(err)
+		}
+		final_chips, err := strconv.Atoi(v)
+		if err != nil {
+			c.Status(fiber.StatusBadRequest)
+			return c.JSON(err)
+		}
+		playerList = append(playerList, models.Player{
+			Id:         uint(id),
+			ChipsFinal: final_chips,
+			Game:       game,
+		})
+	}
+
+	for _, v := range playerList {
+		score, err := v.SetFinalChips()
+		if err != nil {
+			return c.JSON(err.Error())
+		}
+		data[strconv.Itoa(int(v.Id))] = strconv.Itoa(score)
+	}
+
+	err = game.Finilize()
+	if err != nil {
+		c.Status(fiber.StatusBadRequest)
+		c.JSON(err)
+	}
+	return c.JSON(data)
 }
 
 func GetStats(c *fiber.Ctx) error {

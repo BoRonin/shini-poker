@@ -2,7 +2,6 @@ package models
 
 import (
 	"context"
-	"fmt"
 	"shini/storage/postgres"
 	"time"
 )
@@ -28,7 +27,6 @@ func (g *Game) Create() error {
 }
 
 func (g *Game) GetPlayers() ([]Player, error) {
-	fmt.Println("Inside getplayers function")
 	ctx, cancel := context.WithTimeout(context.Background(), postgres.DBTimeout)
 	defer cancel()
 	var players []Player
@@ -52,7 +50,13 @@ where players.game_id = $1`
 	return players, nil
 }
 
-func (g *Game) Finish() error {
-	// Apply finished state to DB and count money
+func (g *Game) Finilize() error {
+	ctx, cancel := context.WithTimeout(context.Background(), postgres.DBTimeout)
+	defer cancel()
+	q := "update game set is_finished = true where id = $1"
+	_, err := postgres.DB.Exec(ctx, q, g.Id)
+	if err != nil {
+		return err
+	}
 	return nil
 }
