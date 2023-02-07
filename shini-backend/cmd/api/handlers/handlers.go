@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/dgrijalva/jwt-go"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -51,8 +52,25 @@ func Login(c *fiber.Ctx) error {
 	}
 	if err := user.ComparePasswords(info.Password); err != nil {
 		c.Status(fiber.StatusUnauthorized)
-		return c.JSON(err)
+		return c.JSON(fiber.Map{
+			"message": "incorrect password",
+		})
 	}
+	claims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.StandardClaims{
+		Issuer:    strconv.Itoa(int(user.Id)),
+		ExpiresAt: time.Now().Add(24 * time.Hour).Unix(),
+	})
+	token, err := claims.SignedString([]byte("shini"))
+	if err != nil {
+		return c.SendStatus(fiber.StatusInternalServerError)
+	}
+	cookie := fiber.Cookie{
+		Name:     "jwt",
+		Value:    token,
+		Expires:  time.Now().Add(24 * time.Hour),
+		HTTPOnly: true,
+	}
+	c.Cookie(&cookie)
 
 	return c.JSON(user)
 }

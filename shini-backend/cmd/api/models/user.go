@@ -2,7 +2,6 @@ package models
 
 import (
 	"context"
-	"log"
 	"shini/storage/postgres"
 	"time"
 
@@ -51,7 +50,6 @@ func (u *LoginInfo) GetUser(user *User) error {
 	q := `select id, name, login, password from users where login = $1`
 
 	if err := postgres.DB.QueryRow(ctx, q, u.Login).Scan(&user.Id, &user.Name, &user.Login, &user.Password); err != nil {
-		log.Println("error here")
 		return err
 	}
 
