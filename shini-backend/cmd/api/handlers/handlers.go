@@ -38,9 +38,23 @@ func Register(c *fiber.Ctx) error {
 }
 
 func Login(c *fiber.Ctx) error {
-	return c.JSON(fiber.Map{
-		"message": "This is login",
-	})
+	info := new(models.LoginInfo)
+	if err := c.BodyParser(&info); err != nil {
+		c.Status(fiber.StatusBadRequest)
+		return c.JSON(err)
+	}
+	user := models.User{}
+	err := info.GetUser(&user)
+	if err != nil {
+		c.Status(fiber.StatusNotFound)
+		return c.JSON(err)
+	}
+	if err := user.ComparePasswords(info.Password); err != nil {
+		c.Status(fiber.StatusUnauthorized)
+		return c.JSON(err)
+	}
+
+	return c.JSON(user)
 }
 func CreateGame(c *fiber.Ctx) error {
 	var data map[string]string
@@ -56,7 +70,9 @@ func CreateGame(c *fiber.Ctx) error {
 	}
 	if err := game.Create(); err != nil {
 		c.Status(fiber.StatusForbidden)
-		return c.JSON(err)
+		return c.JSON(fiber.Map{
+			"message": "Unauthorized",
+		})
 	}
 
 	return c.JSON(game)

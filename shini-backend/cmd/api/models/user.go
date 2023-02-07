@@ -2,6 +2,7 @@ package models
 
 import (
 	"context"
+	"log"
 	"shini/storage/postgres"
 	"time"
 
@@ -14,7 +15,11 @@ type User struct {
 	Login     string    `json:"login,omitempty"`
 	Name      string    `json:"name,omitempty"`
 	Email     string    `json:"email,omitempty"`
-	Password  string    `json:"password,omitempty"`
+	Password  string    `json:"-"`
+}
+type LoginInfo struct {
+	Login    string `json:"login,omitempty"`
+	Password string `json:"password,omitempty"`
 }
 
 func (u *User) SetPassword(password string) {
@@ -36,5 +41,19 @@ func (u *User) Create() error {
 		return err
 	}
 	u.Id = id
+	return nil
+}
+
+func (u *LoginInfo) GetUser(user *User) error {
+
+	ctx, cancel := context.WithTimeout(context.Background(), postgres.DBTimeout)
+	defer cancel()
+	q := `select id, name, login, password from users where login = $1`
+
+	if err := postgres.DB.QueryRow(ctx, q, u.Login).Scan(&user.Id, &user.Name, &user.Login, &user.Password); err != nil {
+		log.Println("error here")
+		return err
+	}
+
 	return nil
 }

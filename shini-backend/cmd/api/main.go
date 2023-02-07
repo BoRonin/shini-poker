@@ -15,8 +15,6 @@ func main() {
 	app := fiber.New()
 	//TO DO:
 	//Login
-	//Register a win
-	//Finish the game and count money
 	//Get stats
 
 	app.Get("/hi", handlers.Hi)
