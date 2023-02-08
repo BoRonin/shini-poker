@@ -2,6 +2,7 @@ package models
 
 import (
 	"context"
+	"fmt"
 	"shini/storage/postgres"
 )
 
@@ -41,8 +42,17 @@ func (p *Player) Create() error {
 func (p *Player) Win(winId int) error {
 	ctx, cancel := context.WithTimeout(context.Background(), postgres.DBTimeout)
 	defer cancel()
-	q := "insert into wins (player, combination) values ($1, $2)"
-	_, err := postgres.DB.Exec(ctx, q, p.Id, winId)
+	q := "select is_finished from game where id = $1"
+	var finished bool
+	err := postgres.DB.QueryRow(ctx, q, p.Game.Id).Scan(&finished)
+	if err != nil {
+		return err
+	}
+	if finished {
+		return fmt.Errorf("the game %d is finished", p.Game.Id)
+	}
+	q = "insert into wins (player, combination) values ($1, $2)"
+	_, err = postgres.DB.Exec(ctx, q, p.Id, winId)
 	if err != nil {
 		return err
 	}

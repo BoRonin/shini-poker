@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 	"log"
-	"shini/cmd/api/handlers"
-	"shini/cmd/api/middlewares"
+	"shini/cmd/handlers"
+	"shini/cmd/middlewares"
 	"shini/storage/postgres"
 
 	"github.com/gofiber/fiber/v2"

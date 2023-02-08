@@ -1,7 +1,7 @@
 package middlewares
 
 import (
-	"shini/cmd/api/utils"
+	"shini/cmd/utils"
 
 	"github.com/gofiber/fiber/v2"
 )

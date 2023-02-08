@@ -2,8 +2,8 @@ package handlers
 
 import (
 	"fmt"
-	"shini/cmd/api/models"
-	"shini/cmd/api/utils"
+	"shini/cmd/models"
+	"shini/cmd/utils"
 	"strconv"
 	"time"
 
@@ -157,13 +157,21 @@ func Win(c *fiber.Ctx) error {
 		c.Status(fiber.StatusBadRequest)
 		return c.JSON(err)
 	}
+	gameID, err := strconv.Atoi(data["game_id"])
+	if err != nil {
+		c.Status(fiber.StatusBadRequest)
+		return c.JSON(err)
+	}
 	winId, _ := strconv.Atoi(data["combination"])
 	player := models.Player{
 		Id: uint(playerID),
+		Game: models.Game{
+			Id: uint(gameID),
+		},
 	}
 	if err := player.Win(winId); err != nil {
 		c.Status(fiber.StatusBadRequest)
-		c.JSON(err)
+		return c.JSON(err.Error())
 	}
 	return c.JSON(fiber.Map{
 		"message": fmt.Sprintf("A win for player with id %d and combination with id %d", player.Id, winId),
@@ -238,7 +246,6 @@ func GetPlayers(c *fiber.Ctx) error {
 	game := models.Game{
 		Id: uint(gameId),
 	}
-	fmt.Println(game)
 	players, err := game.GetPlayers()
 	if err != nil {
 		c.Status(fiber.StatusForbidden)
