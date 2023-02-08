@@ -4,24 +4,31 @@ import (
 	"fmt"
 	"log"
 	"shini/cmd/api/handlers"
+	"shini/cmd/api/middlewares"
 	"shini/storage/postgres"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 )
 
 const webPort = "3000"
 
 func main() {
 	app := fiber.New()
+	app.Use(cors.New(cors.Config{
+		AllowCredentials: true,
+	}))
 	//TO DO:
 	//Login
 	//Get stats
 
-	app.Get("/hi", handlers.Hi)
+	app.Get("/user", handlers.User)
 	app.Post("/register", handlers.Register)
 	app.Post("/login", handlers.Login)
+	app.Post("/logout", handlers.Logout)
 
-	logged := app.Group("")
+	logged := app.Group("admin")
+	logged.Use(middlewares.IsAuthenticated)
 	logged.Post("/addchips/:id", handlers.AddChips)
 	logged.Post("/win/:id", handlers.Win)
 	logged.Post("/finishgame/:id", handlers.FinishGame)

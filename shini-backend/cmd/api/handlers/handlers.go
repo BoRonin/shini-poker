@@ -3,18 +3,12 @@ package handlers
 import (
 	"fmt"
 	"shini/cmd/api/models"
+	"shini/cmd/api/utils"
 	"strconv"
 	"time"
 
-	"github.com/dgrijalva/jwt-go"
 	"github.com/gofiber/fiber/v2"
 )
-
-func Hi(c *fiber.Ctx) error {
-	return c.JSON(fiber.Map{
-		"message": "Hi, bro!",
-	})
-}
 
 func Register(c *fiber.Ctx) error {
 	var data map[string]string
@@ -45,7 +39,7 @@ func Login(c *fiber.Ctx) error {
 		return c.JSON(err)
 	}
 	user := models.User{}
-	err := info.GetUser(&user)
+	err := info.GetUserByLogin(&user)
 	if err != nil {
 		c.Status(fiber.StatusNotFound)
 		return c.JSON(err)
@@ -56,11 +50,7 @@ func Login(c *fiber.Ctx) error {
 			"message": "incorrect password",
 		})
 	}
-	claims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.StandardClaims{
-		Issuer:    strconv.Itoa(int(user.Id)),
-		ExpiresAt: time.Now().Add(24 * time.Hour).Unix(),
-	})
-	token, err := claims.SignedString([]byte("shini"))
+	token, err := utils.GenerateJwt(int(user.Id))
 	if err != nil {
 		return c.SendStatus(fiber.StatusInternalServerError)
 	}
@@ -73,6 +63,40 @@ func Login(c *fiber.Ctx) error {
 	c.Cookie(&cookie)
 
 	return c.JSON(user)
+}
+
+func User(c *fiber.Ctx) error {
+	cookie := c.Cookies("jwt")
+
+	userId, err := utils.ParseJwt(cookie)
+	if err != nil {
+		c.Status(fiber.StatusBadRequest)
+		return c.JSON(fiber.Map{
+			"message": "not logged in",
+		})
+	}
+	id, _ := strconv.Atoi(userId)
+	user := models.User{
+		Id: uint(id),
+	}
+	if err := user.GetUserById(); err != nil {
+		c.Status(fiber.StatusNotFound)
+		c.JSON(err)
+	}
+	return c.JSON(user)
+}
+
+func Logout(c *fiber.Ctx) error {
+	cookie := fiber.Cookie{
+		Name:     "jwt",
+		Value:    "",
+		Expires:  time.Now().Add(-time.Hour),
+		HTTPOnly: true,
+	}
+	c.Cookie(&cookie)
+	return c.JSON(fiber.Map{
+		"message": "success",
+	})
 }
 func CreateGame(c *fiber.Ctx) error {
 	var data map[string]string

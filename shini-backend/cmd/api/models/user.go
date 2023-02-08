@@ -43,13 +43,25 @@ func (u *User) Create() error {
 	return nil
 }
 
-func (u *LoginInfo) GetUser(user *User) error {
+func (u *LoginInfo) GetUserByLogin(user *User) error {
 
 	ctx, cancel := context.WithTimeout(context.Background(), postgres.DBTimeout)
 	defer cancel()
 	q := `select id, name, login, password from users where login = $1`
 
 	if err := postgres.DB.QueryRow(ctx, q, u.Login).Scan(&user.Id, &user.Name, &user.Login, &user.Password); err != nil {
+		return err
+	}
+
+	return nil
+}
+func (u *User) GetUserById() error {
+
+	ctx, cancel := context.WithTimeout(context.Background(), postgres.DBTimeout)
+	defer cancel()
+	q := `select name, login, password from users where id = $1`
+
+	if err := postgres.DB.QueryRow(ctx, q, u.Id).Scan(&u.Name, &u.Login, &u.Password); err != nil {
 		return err
 	}
 
