@@ -15,3 +15,5 @@
 # vendor/
 shini-backend/db-data/
 .fleet/
+shini-frontend/.nuxt/
+shini-frontend/node_modules/

@@ -19,7 +19,6 @@ func main() {
 		AllowCredentials: true,
 	}))
 	//TO DO:
-	//Login
 	//Get stats
 
 	app.Get("/user", handlers.User)
