@@ -1,16 +1,22 @@
 <template>
-  <div>
     <NuxtLayout>
       <transition name="page">
-
         <NuxtPage />
       </transition>
-
-
     </NuxtLayout>
-  </div>
 </template>
-
+<script setup lang="ts">
+useHead({
+    title: "Shini Poker bro",
+    meta: [{
+        name: 'description',
+        content: 'Отлично все',
+    }, {
+        name: 'keywords',
+        description: 'Покерь, Poker'
+    }]
+})
+</script>
 <style lang="sass">
 .page-enter-active, .page-leave-active
     transition: all 0.2s
