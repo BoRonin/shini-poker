@@ -13,7 +13,7 @@ useHead({
         content: 'Отлично все',
     }, {
         name: 'keywords',
-        description: 'Покерь, Poker'
+        content: 'Покерь, Poker'
     }]
 })
 </script>

@@ -10,7 +10,7 @@ import (
 
 type User struct {
 	Id        uint      `json:"id"`
-	CreatedAt time.Time `json:"created_at,omitempty"`
+	CreatedAt time.Time `json:"-"`
 	Login     string    `json:"login,omitempty"`
 	Name      string    `json:"name,omitempty"`
 	Email     string    `json:"email,omitempty"`
