@@ -1,20 +1,16 @@
 <template>
-    <div class="conatiner mx-auto text-center">
-        <div class="login-section hy-auto mt-40">
-            <LoginSignIn />
-        </div>
+    <div class="main_page container flex">
+        <Stats />
+        <Games />
     </div>
 </template>
 
 <script setup lang="ts">
-const route = useRouter()
-const config = useRuntimeConfig()
-const stringurl = ref<string | null>()
-stringurl.value = config.BASE_URL
 
 
 </script>
 
 <style lang="sass" scoped>
-
+    .main_page
+        justify-content: space-between
 </style>

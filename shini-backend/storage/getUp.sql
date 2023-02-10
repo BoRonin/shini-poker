@@ -38,7 +38,7 @@ CREATE TABLE
         "game_id" INT NOT NULL,
         "chips" int DEFAULT 100,
         "chips_final" int,
-        CONSTRAINT players_pkey PRIMARY KEY(user_id, game_id)
+        CONSTRAINT players_pkey PRIMARY KEY (user_id, game_id)
     );
 
 ALTER TABLE "wins"
@@ -79,8 +79,8 @@ INSERT INTO combinations (name) VALUES ('royal flush');
 
 INSERT INTO combinations (name) VALUES ('all pass');
 
-INSERT INTO users (name, login, password, email) VALUES ('YB', 'YB', '$2a$09$.dy78AzaRI63ioFboqxyJOHsXho1535/V1KwT6SecbLGZLmYM8UFu', 'y@b.ru');
-INSERT INTO users (name, login, password, email) VALUES ('YB2', 'YB2', '$2a$09$.dy78AzaRI63ioFboqxyJOHsXho1535/V1KwT6SecbLGZLmYM8UFu', 'y2@b.ru');
-INSERT INTO users (name, login, password, email) VALUES ('YB3', 'YB3', '$2a$09$.dy78AzaRI63ioFboqxyJOHsXho1535/V1KwT6SecbLGZLmYM8UFu', 'y3@b.ru');
-INSERT INTO users (name, login, password, email) VALUES ('YB4', 'YB4', '$2a$09$.dy78AzaRI63ioFboqxyJOHsXho1535/V1KwT6SecbLGZLmYM8UFu', 'y4@b.ru');
+INSERT INTO users (name, login, password, email) VALUES ('Юра', 'YBoronin', '$2a$09$O2hCV2T0j7nvpk5i5.raueyTNaX7sXeeBnXfYQi7mdSt9oj0U2XD2', 'y@b.ru');
+INSERT INTO users (name, login, password, email) VALUES ('Ира', 'IBoronina', '$2a$09$O2hCV2T0j7nvpk5i5.raueyTNaX7sXeeBnXfYQi7mdSt9oj0U2XD2', 'y2@b.ru');
+INSERT INTO users (name, login, password, email) VALUES ('Наташа', 'NBadirova', '$2a$09$O2hCV2T0j7nvpk5i5.raueyTNaX7sXeeBnXfYQi7mdSt9oj0U2XD2', 'y3@b.ru');
+INSERT INTO users (name, login, password, email) VALUES ('Ян', 'ITeplov', '$2a$09$O2hCV2T0j7nvpk5i5.raueyTNaX7sXeeBnXfYQi7mdSt9oj0U2XD2', 'y4@b.ru');
 

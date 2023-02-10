@@ -11,7 +11,7 @@ type Game struct {
 	Title      string    `json:"title"`
 	CreatedAt  time.Time `json:"created_at,omitempty"`
 	Multiplier int       `json:"multiplier"`
-	Finished   bool      `json:"-"`
+	Finished   bool      `json:"is_finished"`
 }
 
 func (g *Game) Create() error {

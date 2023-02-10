@@ -41,7 +41,7 @@ func Login(c *fiber.Ctx) error {
 	err := info.GetUserByLogin(&user)
 	if err != nil {
 		c.Status(fiber.StatusNotFound)
-		return c.JSON(err)
+		return c.JSON(err.Error())
 	}
 	if err := user.ComparePasswords(info.Password); err != nil {
 		c.Status(fiber.StatusUnauthorized)
@@ -85,6 +85,16 @@ func User(c *fiber.Ctx) error {
 	return c.JSON(user)
 }
 
+func GetUsers(c *fiber.Ctx) error {
+	var users []models.User
+	if err := models.GetAllUsers(&users); err != nil {
+		c.Status(fiber.StatusInternalServerError)
+		return c.JSON(err.Error())
+	}
+	c.Status(200)
+	return c.JSON(users)
+}
+
 func Logout(c *fiber.Ctx) error {
 	cookie := fiber.Cookie{
 		Name:     "jwt",
@@ -93,7 +103,9 @@ func Logout(c *fiber.Ctx) error {
 		HTTPOnly: true,
 	}
 	c.Cookie(&cookie)
+	c.Status(fiber.StatusOK)
 	return c.JSON(fiber.Map{
+
 		"message": "success",
 	})
 }

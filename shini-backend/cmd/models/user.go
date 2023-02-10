@@ -56,7 +56,6 @@ func (u *LoginInfo) GetUserByLogin(user *User) error {
 	return nil
 }
 func (u *User) GetUserById() error {
-
 	ctx, cancel := context.WithTimeout(context.Background(), postgres.DBTimeout)
 	defer cancel()
 	q := `select name, login, password from users where id = $1`
@@ -65,5 +64,23 @@ func (u *User) GetUserById() error {
 		return err
 	}
 
+	return nil
+}
+
+func GetAllUsers(users *[]User) error {
+	ctx, cancel := context.WithTimeout(context.Background(), postgres.DBTimeout)
+	defer cancel()
+	q := `select id, name, login from users`
+	rows, err := postgres.DB.Query(ctx, q)
+	if err != nil {
+		return err
+	}
+	var user User
+	for rows.Next() {
+		if err := rows.Scan(&user.Id, &user.Name, &user.Login); err != nil {
+			return err
+		}
+		*users = append(*users, user)
+	}
 	return nil
 }

@@ -1,10 +1,7 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  runtimeConfig: {
-    BASE_URL: process.env.BASE_URL
-  },
   app: {
-
+    pageTransition: { name: 'page', mode: 'out-in' },
     head: {
       meta:
         [{

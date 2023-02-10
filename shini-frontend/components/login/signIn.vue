@@ -2,11 +2,13 @@
     <div class="flex min-h-full items-center text-center justify-center py-12 px-4 sm:px-6 lg:px-8">
         <div class="w-full max-w-md space-y-8">
             <div>
-                <Logo class="logo mx-auto hy-auto flex h-20 w-20 " />
+                <Logo class="logo mx-auto hy-auto flex h-20 w-20" />
                 <h2 class="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900">Заходи. Не ссы.</h2>
                 <a href="#" class="font-medium text-gray-600 hover:text-gray-400" @click="addText()">Регистрации нет,
                     так что если ты не в
-                    клубе - ты лох. {{ moreText }} </a>
+                    клубе - ты лох. </a>
+                    <p>{{ moreText }}</p>
+                    <p class="text-sm text-red-600" v-if="alert"> {{ alert }}</p>
             </div>
             <form class="mt-8 space-y-6" action="#" method="POST" @submit.prevent="Login()">
                 <input type="hidden" name="remember" value="true" />
@@ -38,23 +40,34 @@
 
 <script setup lang="ts">
 import { User } from '@/types/User'
+const alert = ref("")
 const login = ref("")
 const password = ref("")
 const moreText = ref("")
 const data = ref()
 const {user} = useAuth()
-const Login = () => {
-    moreText.value = "АААА, хрен тебе!"
-    useFetch<User>('http://localhost:8080/login', {
+const Login = async() => {
+    
+    await useFetch<User>('http://localhost:8080/login', {
         body: {
             login: login.value,
             password: password.value,
         },
         method: 'POST',
         credentials: 'include',
+        onResponseError({ request, response, options }) {
+            moreText.value = "АААА, хрен тебе!"
+            if (response.status === 404){
+                alert.value = "Нет такого кекса. Попробуй еще раз!"
+            } else if (response.status === 401){
+                alert.value = "Забыл пароль - без трусов король!"
+            } else {
+                alert.value = "Что-то пошло не так. Бей тревогу!"
+            }   
+  }
     }).then((response) => {
-        console.log(response)
         user.value = response.data.value
+        navigateTo('/')
     })
 }
 
