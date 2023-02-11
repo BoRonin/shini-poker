@@ -13,6 +13,12 @@ type Player struct {
 	Chips      int  `json:"chips,omitempty"`
 	ChipsFinal int  `json:"chips_final,omitempty"`
 }
+type PlayersForList struct {
+	Id    uint   `json:"id"`
+	Name  string `json:"user_name"`
+	Chips int    `json:"chips"`
+	Login string `json:"login"`
+}
 
 func (p *Player) AddChips(number int) error {
 	ctx, cancel := context.WithTimeout(context.Background(), postgres.DBTimeout)

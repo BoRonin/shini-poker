@@ -59,6 +59,7 @@ const { data: users } = await useFetch<User[]>(config.BASE_URL + "admin/users", 
     }
 })
 const CreateGame = async () => {
+    
     useFetch(config.BASE_URL + "admin/creategame",{
         method:'POST',
         credentials:'include',
@@ -76,22 +77,21 @@ const CreateGame = async () => {
                             user_id: e.user.id.toString(),
                             chips: "100",
                         },
-                        async onResponse({ request, response, options }) {
-                            
-                            console.log('[fetch response]', request, response.status, response.body)
+                        async onResponseError({response}){
+                            console.log('[fetch response error]', request, response.status, response._data)
                         }
                     })
                 }
             });
             console.log('[fetch response]', response._data)
+            navigateTo(`/games/${response._data.id}`)
         }
-
     })
 }
 
 </script>
 
-<style lang="sass" scoped>
+<style lang="sass">
 .pickMulti
     justify-content: space-evenly
     align-items: flex-end

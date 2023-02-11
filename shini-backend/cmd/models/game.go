@@ -26,12 +26,12 @@ func (g *Game) Create() error {
 	return nil
 }
 
-func (g *Game) GetPlayers() ([]Player, error) {
+func (g *Game) GetPlayers() ([]PlayersForList, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), postgres.DBTimeout)
 	defer cancel()
-	var players []Player
+	var players []PlayersForList
 
-	statement := `select users.id, users.name, players.chips from users
+	statement := `select players.id, users.name, players.chips, users.login from users
 join players on users.id = players.user_id
 where players.game_id = $1`
 	rows, err := postgres.DB.Query(ctx, statement, g.Id)
@@ -40,8 +40,8 @@ where players.game_id = $1`
 	}
 
 	for rows.Next() {
-		var player Player
-		if err := rows.Scan(&player.User.Id, &player.User.Name, &player.Chips); err != nil {
+		var player PlayersForList
+		if err := rows.Scan(&player.Id, &player.Name, &player.Chips, &player.Login); err != nil {
 			return nil, err
 		}
 

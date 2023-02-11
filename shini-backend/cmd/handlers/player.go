@@ -20,18 +20,23 @@ func AddChips(c *fiber.Ctx) error {
 		return c.JSON(err)
 	}
 	chips, _ := strconv.Atoi(data["chips"])
+	game_id, _ := strconv.Atoi(data["game_id"])
 	player := models.Player{
 		Id: uint(playerID),
+		Game: models.Game{
+			Id: uint(game_id),
+		},
 	}
 	if err := player.AddChips(chips); err != nil {
 		c.Status(fiber.StatusNotFound)
 		return c.JSON(err)
-
 	}
-	return c.JSON(fiber.Map{
-		"message": "Success",
-		"chips":   player.Chips,
-	})
+	players, err := player.Game.GetPlayers()
+	if err != nil {
+		c.Status(fiber.StatusForbidden)
+		return c.JSON(err)
+	}
+	return c.JSON(players)
 }
 
 func Win(c *fiber.Ctx) error {
@@ -66,12 +71,6 @@ func Win(c *fiber.Ctx) error {
 	})
 }
 
-type playersForList struct {
-	Id    uint   `json:"user_id"`
-	Name  string `json:"user_name"`
-	Chips int    `json:"chips"`
-}
-
 func GetPlayers(c *fiber.Ctx) error {
 	gameId, _ := strconv.Atoi(c.Params("id"))
 	game := models.Game{
@@ -82,16 +81,8 @@ func GetPlayers(c *fiber.Ctx) error {
 		c.Status(fiber.StatusForbidden)
 		return c.JSON(err)
 	}
-	var pfl []playersForList
 
-	for _, v := range players {
-		pfl = append(pfl, playersForList{
-			Id:    v.User.Id,
-			Name:  v.User.Name,
-			Chips: v.Chips,
-		})
-	}
-	return c.JSON(pfl)
+	return c.JSON(players)
 }
 
 func AddPlayer(c *fiber.Ctx) error {
