@@ -36,6 +36,7 @@ func main() {
 	logged.Post("/creategame", handlers.CreateGame)
 	logged.Post("/addplayer/:id", handlers.AddPlayer)
 	logged.Get("/getplayers/:id", handlers.GetPlayers)
+	logged.Get("/combinations", handlers.GetCombinations)
 
 	postgres.ConnectToDB()
 

@@ -78,6 +78,7 @@ INSERT INTO combinations (name) VALUES ('straight flush');
 INSERT INTO combinations (name) VALUES ('royal flush');
 
 INSERT INTO combinations (name) VALUES ('all pass');
+INSERT INTO combinations (name) VALUES ('split');
 
 INSERT INTO users (name, login, password, email) VALUES ('Юра', 'YBoronin', '$2a$09$O2hCV2T0j7nvpk5i5.raueyTNaX7sXeeBnXfYQi7mdSt9oj0U2XD2', 'y@b.ru');
 INSERT INTO users (name, login, password, email) VALUES ('Ира', 'IBoronina', '$2a$09$O2hCV2T0j7nvpk5i5.raueyTNaX7sXeeBnXfYQi7mdSt9oj0U2XD2', 'y2@b.ru');

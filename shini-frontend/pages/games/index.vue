@@ -1,7 +1,7 @@
 <template>
     <div class="mt-10 text-center">
         
-        <h1 class="title">Кто играет?</h1>
+        <h1 class="title" ref="whos">Кто играет?</h1>
         <div class="pickPlayers mt-10 flex">
             <div class="user" :class="u.active ? `active` : ``" @click="toggleActive(i)" v-for="u, i in aUsers"
                 :key=u?.user.id>
@@ -13,18 +13,22 @@
             </div>
         </div>
         <form method="POST" @submit.prevent="CreateGame()">
-
             <div class="pickMulti flex">
                <div>
-                <span>Название:</span>
                 <input id="game_name" name="game_name" type="text" required
                     class="relative block appearance-none rounded-none border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-slate-700 focus:outline-none focus:ring-indigo-500 sm:text-sm"
                     placeholder="Название игры" v-model="game" />
             </div>
                 <div> <span>Множитель:</span>
-                    <input id="multiplier" name="multiplier" type="number" required
-                        class="relative block appearance-none rounded-none border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-slate-700 focus:outline-none focus:ring-indigo-500 sm:text-sm"
-                        placeholder="Множитель" v-model="multiplier" />
+                    <div class="multiplierBlock">
+                        <div class="mult" @click="minus()">
+                            <IconsMinus />
+                        </div>
+                        <div class="multiplier">{{ multiplier }}</div>
+                        <div class="mult" @click="plus()">
+                            <IconsPlus />
+                        </div>
+                    </div>
                 </div>
                 <button class="button" type="submit">Начать игру</button>
             </div>
@@ -35,15 +39,29 @@
 <script setup lang="ts">
 import {Game} from '@/types/Game'
 import { User } from '@/types/User'
+import { onClickOutside } from '@vueuse/core'
 const config = useAppConfig()
+const whos = ref()
 const game = ref("")
 const multiplier = ref(2)
 interface activeUser {
     user: User,
     active: boolean,
 }
-
+// onClickOutside(whos, (e) => {
+//     console.log("Not in title block");
+    
+// })
 const aUsers = ref<activeUser[]>([])
+const minus = () =>{
+    if (multiplier.value === 0) {
+        return
+    }
+    multiplier.value--
+}
+const plus = () => {
+    multiplier.value++
+}
 function toggleActive(int: number) {
     aUsers.value[int].active = !aUsers.value[int].active
 }
@@ -92,6 +110,21 @@ const CreateGame = async () => {
 </script>
 
 <style lang="sass">
+.multiplierBlock
+    display: flex
+    justify-content: space-around
+    gap: 1rem
+    user-select: none
+    .mult
+        display: grid
+        place-content: center
+        padding: .1rem 1rem
+        border: 1px solid black
+        color: white
+        background-color: #333
+        cursor: pointer
+        font-weight: bold
+        text-transform: uppercase
 .pickMulti
     justify-content: space-evenly
     align-items: flex-end

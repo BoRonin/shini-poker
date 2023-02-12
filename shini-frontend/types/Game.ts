@@ -12,7 +12,7 @@ export interface Player{
 }
 export interface PlayerForGame{
     id: number,
-    name?: string,
+    user_name?: string,
     game_id?: number,
     chips?: number,
     chips_final?: number,
@@ -20,7 +20,7 @@ export interface PlayerForGame{
 }
 export interface Combination{
     id: number,
-    title: string
+    name: string
 }
 export interface Win {
     player: Player,
