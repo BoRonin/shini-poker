@@ -3,7 +3,7 @@
             <Logo class="logo hy-auto flex h-20 w-20" />
         <div class="user-header flex items-center gap-3">
             <p class="user" >{{ user?.login }}</p>
-            <button @click="Logout()" class="logout_button">GET OUT</button>
+            <button @click="Logout()" class="logout_button">НА ВЫХОД</button>
         </div>
     </div>
     <hr/>

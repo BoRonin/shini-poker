@@ -16,9 +16,9 @@
                     placeholder="Сколько всего фишек" v-model="players[i].chips_final" v-if="players !== null" />
                 {{ player.chips_final }}
                 <div class="addChips win"><icons-plus height="2rem" width="2rem" @click="OpenWinOption(player.id)" />
-                    <div class="Result" v-if="player.money !== undefined">
-                    
-                    </div>
+                </div>
+                <div class="Result" v-if="player.money !== undefined">
+                    {{ player.money }}
                 </div>
             </div>
             <Teleport to="body">
@@ -59,6 +59,11 @@ const { data: players } = useFetch<PlayerForGame[]>(config.BASE_URL + `admin/get
     method: 'GET',
     credentials: 'include'
 })
+interface results {
+    player: PlayerForGame,
+    score: number,
+}
+
 const addChips = (player_id: number) => {
     useFetch<PlayerForGame[]>(config.BASE_URL + `admin/addchips/${player_id}`, {
         body: {
@@ -101,21 +106,32 @@ const finishGame = () => {
         }
         let id = e.id.toString()
         let chips = e.chips_final?.toString()
-
         finalPlayers.set(id, chips)
 
     });
     if (!!allGood) {
-
         const body = Object.fromEntries(finalPlayers)
-        useFetch(config.BASE_URL + `admin/finishgame/${route.params.id}`,{
-            credentials:'include',
+        const { data: results } = useFetch<results[]>(config.BASE_URL + `admin/finishgame/${route.params.id}`, {
+            credentials: 'include',
             body: body,
-            method:'POST',
+            method: 'POST',
+            onResponse({response }) {
+                console.log(toRaw(response._data));
+                let results = toRaw(response._data)
+                results.forEach((res:any) => {
+                    players.value?.forEach(pl => {
+                      
+                        if (pl.id === res.id) {
+                            pl.money = res.score
+                            console.log(pl.money);
+                            
+                        }
+                    });
+                });
+            }
         })
 
     }
-
 }
 function Setwin(cid: number, pid: number | undefined) {
     if ((typeof (pid) === 'number')) {
@@ -127,9 +143,6 @@ function Setwin(cid: number, pid: number | undefined) {
             },
             credentials: 'include',
             method: 'POST',
-            onResponse({ response }) {
-                console.log(response._data);
-            }
         })
     }
 }

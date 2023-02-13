@@ -1,5 +1,5 @@
 <template>
     <div class="main-section">
-        <h1>STATS HERE</h1>
+        <p class="sectionTitle">Статистика</p>
     </div>
 </template>

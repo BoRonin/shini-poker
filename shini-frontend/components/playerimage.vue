@@ -15,4 +15,5 @@
         object-fit: cover
         object-position: top
         border-radius: 50%
+        margin: 0 auto
 </style>

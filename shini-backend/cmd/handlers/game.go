@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"log"
 	"shini/cmd/models"
 	"strconv"
 	"time"
@@ -30,6 +31,11 @@ func CreateGame(c *fiber.Ctx) error {
 	return c.JSON(game)
 }
 
+type PlayerScore struct {
+	models.Player
+	Score int `json:"score"`
+}
+
 func FinishGame(c *fiber.Ctx) error {
 	var data map[string]string
 	if err := c.BodyParser(&data); err != nil {
@@ -46,7 +52,7 @@ func FinishGame(c *fiber.Ctx) error {
 	game := models.Game{
 		Id: uint(gameid),
 	}
-	var playerList []models.Player
+	var playerList []PlayerScore
 	for k, v := range data {
 		id, err := strconv.Atoi(k)
 		if err != nil {
@@ -58,19 +64,22 @@ func FinishGame(c *fiber.Ctx) error {
 			c.Status(fiber.StatusBadRequest)
 			return c.JSON(err)
 		}
-		playerList = append(playerList, models.Player{
-			Id:         uint(id),
-			ChipsFinal: final_chips,
-			Game:       game,
+		playerList = append(playerList, PlayerScore{
+			Player: models.Player{
+				Id:         uint(id),
+				ChipsFinal: final_chips,
+				Game:       game,
+			},
 		})
 	}
 
-	for _, v := range playerList {
-		score, err := v.SetFinalChips()
+	for i, v := range playerList {
+		score, err := v.Player.SetFinalChips()
 		if err != nil {
 			return c.JSON(err.Error())
 		}
-		data[strconv.Itoa(int(v.Id))] = strconv.Itoa(score)
+		log.Println(score)
+		playerList[i].Score = score
 	}
 
 	err = game.Finilize()
@@ -78,5 +87,5 @@ func FinishGame(c *fiber.Ctx) error {
 		c.Status(fiber.StatusBadRequest)
 		c.JSON(err)
 	}
-	return c.JSON(data)
+	return c.JSON(playerList)
 }

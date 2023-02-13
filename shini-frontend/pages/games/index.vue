@@ -50,10 +50,7 @@ interface activeUser {
     user: User,
     active: boolean,
 }
-// onClickOutside(whos, (e) => {
-//     console.log("Not in title block");
 
-// })
 const aUsers = ref<activeUser[]>([])
 const minus = () => {
     if (multiplier.value === 0) {
