@@ -33,7 +33,8 @@ func (g *Game) GetPlayers() ([]PlayersForList, error) {
 
 	statement := `select players.id, users.name, players.chips, users.login from users
 join players on users.id = players.user_id
-where players.game_id = $1`
+where players.game_id = $1
+order by players.id`
 	rows, err := postgres.DB.Query(ctx, statement, g.Id)
 	if err != nil {
 		return nil, err
