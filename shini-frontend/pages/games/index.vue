@@ -1,6 +1,6 @@
 <template>
     <div class="mt-10 text-center">
-        
+
         <h1 class="title" ref="whos">Кто играет?</h1>
         <div class="pickPlayers mt-10 flex">
             <div class="user" :class="u.active ? `active` : ``" @click="toggleActive(i)" v-for="u, i in aUsers"
@@ -14,11 +14,11 @@
         </div>
         <form method="POST" @submit.prevent="CreateGame()">
             <div class="pickMulti flex">
-               <div>
-                <input id="game_name" name="game_name" type="text" required
-                    class="relative block appearance-none rounded-none border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-slate-700 focus:outline-none focus:ring-indigo-500 sm:text-sm"
-                    placeholder="Название игры" v-model="game" />
-            </div>
+                <div>
+                    <input id="game_name" name="game_name" type="text" required
+                        class="relative block appearance-none rounded-none border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-slate-700 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+                        placeholder="Название игры" v-model="game" />
+                </div>
                 <div> <span>Множитель:</span>
                     <div class="multiplierBlock">
                         <div class="mult" @click="minus()">
@@ -31,29 +31,31 @@
                     </div>
                 </div>
                 <button class="button" type="submit">Начать игру</button>
+                <h1>{{ errorMessage }}</h1>
             </div>
         </form>
     </div>
 </template>
 
 <script setup lang="ts">
-import {Game} from '@/types/Game'
+import { Game } from '@/types/Game'
 import { User } from '@/types/User'
 import { onClickOutside } from '@vueuse/core'
 const config = useAppConfig()
 const whos = ref()
 const game = ref("")
 const multiplier = ref(2)
+const errorMessage = ref("")
 interface activeUser {
     user: User,
     active: boolean,
 }
 // onClickOutside(whos, (e) => {
 //     console.log("Not in title block");
-    
+
 // })
 const aUsers = ref<activeUser[]>([])
-const minus = () =>{
+const minus = () => {
     if (multiplier.value === 0) {
         return
     }
@@ -77,33 +79,44 @@ const { data: users } = await useFetch<User[]>(config.BASE_URL + "admin/users", 
     }
 })
 const CreateGame = async () => {
-    
-    useFetch(config.BASE_URL + "admin/creategame",{
-        method:'POST',
-        credentials:'include',
+
+    useFetch(config.BASE_URL + "admin/creategame", {
+        method: 'POST',
+        credentials: 'include',
         body: {
             title: game.value,
             multiplier: multiplier.value.toString()
         },
-        async onResponse({ request, response, options }) {
+        onResponse({ request, response, options }) {
+            if (response.status === 403) {
+                errorMessage.value = "Выбери название по-оригинальнее"
+                return
+            }
             aUsers.value.forEach(e => {
                 if (!!e.active) {
-                    useFetch(config.BASE_URL + `admin/addplayer/${response._data?.id}`,{
-                        credentials:"include",
-                        method:'POST',
+                    useFetch(config.BASE_URL + `admin/addplayer/${response._data?.id}`, {
+                        credentials: "include",
+                        method: 'POST',
                         body: {
                             user_id: e.user.id.toString(),
                             chips: "100",
                         },
-                        async onResponseError({response}){
+                        onResponseError({ response }) {
                             console.log('[fetch response error]', request, response.status, response._data)
+                        },
+                        onResponse({ response }) {
+                            console.log('[fetch response data]', response.status, response._data)
                         }
                     })
                 }
+                console.log('[fetch response]', response._data)
+
+                navigateTo(`/games/${response._data.id}`)
+
             });
-            console.log('[fetch response]', response._data)
-            navigateTo(`/games/${response._data.id}`)
-        }
+
+        },
+
     })
 }
 

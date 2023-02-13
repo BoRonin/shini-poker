@@ -14,9 +14,10 @@ export interface PlayerForGame{
     id: number,
     user_name?: string,
     game_id?: number,
-    chips?: number,
-    chips_final?: number,
+    chips: number,
+    chips_final: number,
     login?: string,
+    money: number,
 }
 export interface Combination{
     id: number,

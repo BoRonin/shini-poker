@@ -23,7 +23,7 @@ func CreateGame(c *fiber.Ctx) error {
 	if err := game.Create(); err != nil {
 		c.Status(fiber.StatusForbidden)
 		return c.JSON(fiber.Map{
-			"message": "Unauthorized",
+			"message": "The game already exists",
 		})
 	}
 
