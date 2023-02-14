@@ -1,9 +1,16 @@
 package handlers
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"shini/cmd/models"
+
+	"github.com/gofiber/fiber/v2"
+)
 
 func GetStats(c *fiber.Ctx) error {
-	return c.JSON(fiber.Map{
-		"message": "This this is getstats",
-	})
+	stats, err := models.GetStats()
+	if err != nil {
+		c.Status(fiber.StatusInternalServerError)
+		c.JSON(err.Error())
+	}
+	return c.JSON(stats)
 }

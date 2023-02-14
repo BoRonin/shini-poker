@@ -1,5 +1,9 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
+  devServer:{
+    port: 3001,
+    url: "http://localhost:3001"
+  },
   app: {
     pageTransition: { name: 'page', mode: 'out-in' },
     head: {
@@ -24,7 +28,6 @@ export default defineNuxtConfig({
   },
   modules:[
     '@vueuse/nuxt',
-  ]
-
+  ],
 
 })

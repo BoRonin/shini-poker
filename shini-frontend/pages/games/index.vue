@@ -7,7 +7,9 @@
                 :key=u?.user.id>
                 <div class="icon">
                     <img :src="`/images/${u.user.login.toLowerCase()}.jpg`">
-                    <IconsTick class="iconTick" v-if="u.active" />
+                    <transition name="page">
+                        <IconsTick class="iconTick" v-if="u.active" />
+                    </transition>
                 </div>
                 <h3>{{ u.user.name }}</h3>
             </div>
@@ -70,13 +72,14 @@ const { data: users } = await useFetch<User[]>(config.BASE_URL + "admin/users", 
     credentials: 'include',
     transform: users => {
         users.forEach(element => {
-            aUsers.value?.push({ user: element, active: false })
+            aUsers.value?.push({ user: element, active: true })
         })
         return users
     }
 })
-const CreateGame = async () => {
 
+const CreateGame = () => {
+    let gameid = 0
     useFetch(config.BASE_URL + "admin/creategame", {
         method: 'POST',
         credentials: 'include',
@@ -98,22 +101,19 @@ const CreateGame = async () => {
                             user_id: e.user.id.toString(),
                             chips: "100",
                         },
-                        onResponseError({ response }) {
-                            console.log('[fetch response error]', request, response.status, response._data)
-                        },
-                        onResponse({ response }) {
-                            console.log('[fetch response data]', response.status, response._data)
-                        }
                     })
                 }
                 console.log('[fetch response]', response._data)
 
-                navigateTo(`/games/${response._data.id}`)
+                gameid = response._data.id
 
             });
+            setTimeout(()=>{
+            navigateTo(`/games/${gameid}`)
 
+        }, 200)
+            
         },
-
     })
 }
 

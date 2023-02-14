@@ -14,11 +14,10 @@
                 <input id="overall_chips" name="overall_chips" type="number"
                     class=" mt-5 relative block w-full appearance-none rounded-none border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-slate-700 focus:outline-none focus:ring-indigo-500 sm:text-sm"
                     placeholder="Сколько всего фишек" v-model="players[i].chips_final" v-if="players !== null" />
-                {{ player.chips_final }}
                 <div class="addChips win"><icons-plus height="2rem" width="2rem" @click="OpenWinOption(player.id)" />
                 </div>
                 <div class="Result" v-if="player.money !== undefined">
-                    {{ player.money }}
+                    Результат: {{ player.money }}
                 </div>
             </div>
             <Teleport to="body">
@@ -55,7 +54,7 @@ const config = useAppConfig()
 const route = useRoute()
 const FTW = ref()
 const alert = ref("")
-const { data: players } = useFetch<PlayerForGame[]>(config.BASE_URL + `admin/getplayers/${route.params.id}`, {
+const { data: players } = await useLazyFetch<PlayerForGame[]>(config.BASE_URL + `admin/getplayers/${route.params.id}`, {
     method: 'GET',
     credentials: 'include'
 })
