@@ -20,13 +20,13 @@ func main() {
 	}))
 	//TO DO:
 	//Get stats
+	api := app.Group("api")
+	api.Get("/user", handlers.User)
+	api.Post("/register", handlers.Register)
+	api.Post("/login", handlers.Login)
+	api.Post("/logout", handlers.Logout)
 
-	app.Get("/user", handlers.User)
-	app.Post("/register", handlers.Register)
-	app.Post("/login", handlers.Login)
-	app.Post("/logout", handlers.Logout)
-
-	logged := app.Group("admin")
+	logged := api.Group("admin")
 	logged.Use(middlewares.IsAuthenticated)
 	logged.Post("/addchips/:id", handlers.AddChips)
 	logged.Post("/win/:id", handlers.Win)

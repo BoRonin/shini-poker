@@ -40,6 +40,7 @@
 
 <script setup lang="ts">
 import { User } from '@/types/User'
+const config = useAppConfig()
 const alert = ref("")
 const login = ref("")
 const password = ref("")
@@ -48,7 +49,7 @@ const data = ref()
 const {user} = useAuth()
 const Login = async() => {
     
-    await useFetch<User>('http://localhost:8080/login', {
+    await useFetch<User>(config.BASE_URL + 'login', {
         body: {
             login: login.value,
             password: password.value,
