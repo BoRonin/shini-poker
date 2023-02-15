@@ -15,7 +15,7 @@
             </div>
         </div>
         <form method="POST" id="game_name" @submit.prevent="CreateGame()">
-            <div class="pickMulti flex">
+            <div class="pw-5 pickMulti flex">
                
                     <input  name="game_name" type="text" required
                         class="relative block appearance-none rounded-none border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-slate-700 focus:outline-none focus:ring-indigo-500 sm:text-sm"
@@ -120,10 +120,12 @@ const CreateGame = () => {
 </script>
 
 <style lang="sass">
+#game_name
+    padding: 0 1rem
 .buttoncont
     display: flex
     place-content: center
-    margin: 2rem
+    margin: 2rem auto
     button
         padding: .5rem 1rem
         border-radius: .3rem
@@ -131,7 +133,7 @@ const CreateGame = () => {
         background-color: #333
         transition: all .3s ease
         height: 3rem
-        width: min(70vw, 15rem)
+        width: min(90vw, 15rem)
 
         &:hover
             background-color: #555
@@ -153,6 +155,8 @@ const CreateGame = () => {
 .pickMulti
     justify-content: space-evenly
     align-items: flex-end
+    gap: 1rem
+    flex-wrap: wrap
 
     #multiplier
         margin: 0 1rem

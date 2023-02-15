@@ -61,6 +61,7 @@ const getChipString = (chips: number )=>{
         display: flex
         flex-wrap: wrap
         gap: 1rem
+        justify-content: space-around
         .wins
             font-size: 0.9rem
             color: #999

@@ -29,6 +29,7 @@ const Logout = async () => {
     .header
         align-items: center
         justify-content: space-between
+        padding: 0 1rem
         .logo
             margin: 1rem 0
         .logout_button

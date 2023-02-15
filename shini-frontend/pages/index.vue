@@ -13,4 +13,5 @@
 <style lang="sass" scoped>
     .main_page
         justify-content: space-between
+        flex-direction: column
 </style>
