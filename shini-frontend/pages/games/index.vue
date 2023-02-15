@@ -14,13 +14,13 @@
                 <h3>{{ u.user.name }}</h3>
             </div>
         </div>
-        <form method="POST" @submit.prevent="CreateGame()">
+        <form method="POST" id="game_name" @submit.prevent="CreateGame()">
             <div class="pickMulti flex">
-                <div>
-                    <input id="game_name" name="game_name" type="text" required
+               
+                    <input  name="game_name" type="text" required
                         class="relative block appearance-none rounded-none border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-slate-700 focus:outline-none focus:ring-indigo-500 sm:text-sm"
                         placeholder="Название игры" v-model="game" />
-                </div>
+
                 <div> <span>Множитель:</span>
                     <div class="multiplierBlock">
                         <div class="mult" @click="minus()">
@@ -32,9 +32,9 @@
                         </div>
                     </div>
                 </div>
-                <button class="button" type="submit">Начать игру</button>
-                <h1>{{ errorMessage }}</h1>
+                <h1 v-if="errorMessage !== ''">{{ errorMessage }}</h1>
             </div>
+            <div class="buttoncont"><button class="button block" form="game_name" >Начать игру</button></div>
         </form>
     </div>
 </template>
@@ -120,6 +120,21 @@ const CreateGame = () => {
 </script>
 
 <style lang="sass">
+.buttoncont
+    display: flex
+    place-content: center
+    margin: 2rem
+    button
+        padding: .5rem 1rem
+        border-radius: .3rem
+        color: white
+        background-color: #333
+        transition: all .3s ease
+        height: 3rem
+        width: min(70vw, 15rem)
+
+        &:hover
+            background-color: #555
 .multiplierBlock
     display: flex
     justify-content: space-around
@@ -139,23 +154,15 @@ const CreateGame = () => {
     justify-content: space-evenly
     align-items: flex-end
 
-    button
-        padding: .5rem 1rem
-        border-radius: .3rem
-        color: white
-        background-color: #333
-        transition: all .3s ease
-        height: 3rem
-        &:hover
-            background-color: #555
-    #miltiplier
+    #multiplier
         margin: 0 1rem
     
         
 .pickPlayers
     justify-content: space-around
-    width: 50rem
-    margin: 5rem auto           
+    max-width: 50rem
+    margin: 5rem auto     
+    flex-wrap: wrap      
     .user
         .icon
             border-radius: 50%

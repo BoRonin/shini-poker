@@ -14,7 +14,7 @@
                 <input id="overall_chips" name="overall_chips" type="number"
                     class=" mt-5 relative block w-full appearance-none rounded-none border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-slate-700 focus:outline-none focus:ring-indigo-500 sm:text-sm"
                     placeholder="Сколько всего фишек" v-model="players[i].chips_final" v-if="players !== null" />
-                <div class="addChips win"><icons-plus height="2rem" width="2rem" @click="OpenWinOption(player.id)" />
+                <div class="addChips win"><icons-plus height="3rem" width="3rem" @click="OpenWinOption(player.id)" />
                 </div>
                 <div class="Result" v-if="player.money !== undefined">
                     Результат: {{ player.money }}
@@ -150,6 +150,7 @@ function Setwin(cid: number, pid: number | undefined) {
 <style lang="sass" scoped>
 .gamePlayers
     justify-content: space-evenly
+    flex-wrap: wrap
 .user
     span
         font-weight: bold
