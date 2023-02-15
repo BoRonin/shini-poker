@@ -61,3 +61,23 @@ func (g *Game) Finilize() error {
 	}
 	return nil
 }
+
+func GetGames() ([]Game, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), postgres.DBTimeout)
+	defer cancel()
+	q := "select * from game"
+	rows, err := postgres.DB.Query(ctx, q)
+	if err != nil {
+		return nil, err
+	}
+	var games []Game
+	for rows.Next() {
+		var game Game
+		if err := rows.Scan(&game.Id, &game.Title, &game.CreatedAt, &game.Multiplier, &game.Finished); err != nil {
+			return nil, err
+		}
+		games = append(games, game)
+
+	}
+	return games, nil
+}

@@ -1,10 +1,11 @@
 <template>
-    <img :src="source" :alt="alt">
+    <img :src="source" :alt="alt" :class="class">
 </template>
 <script setup lang="ts">
     const props = defineProps({
         source: String,
-        alt: String
+        alt: String,
+        class: String,
     })
 </script>
 
@@ -16,4 +17,6 @@
         object-position: top
         border-radius: 50%
         margin: 0 auto
+    .small
+        width: 5em
 </style>

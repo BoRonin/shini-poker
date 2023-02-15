@@ -89,3 +89,12 @@ func FinishGame(c *fiber.Ctx) error {
 	}
 	return c.JSON(playerList)
 }
+
+func GetGames(c *fiber.Ctx) error {
+	games, err := models.GetGames()
+	if err != nil {
+		c.Status(fiber.StatusInternalServerError)
+		return err
+	}
+	return c.JSON(games)
+}

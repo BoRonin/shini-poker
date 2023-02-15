@@ -1,6 +1,7 @@
 export interface Game {
     id: number,
     title?: string,
+    created_at: string,
     multiplier?: number,
     is_finished?: boolean
 }
