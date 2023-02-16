@@ -17,6 +17,7 @@
         object-position: top
         border-radius: 50%
         margin: 0 auto
+        user-select: none
     .small
         width: 5em
 </style>

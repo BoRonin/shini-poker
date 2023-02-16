@@ -1,5 +1,5 @@
 <template>
-    <div class="mt-10 text-center">
+    <div class="main-section mt-10 text-center">
 
         <h1 class="title" ref="whos">Кто играет?</h1>
         <div class="pickPlayers mt-10 flex">
@@ -7,7 +7,7 @@
                 :key=u?.user.id>
                 <div class="icon">
                     <img :src="`/images/${u.user.login.toLowerCase()}.jpg`">
-                    <transition name="page">
+                    <transition name="element">
                         <IconsTick class="iconTick" v-if="u.active" />
                     </transition>
                 </div>

@@ -1,12 +1,13 @@
 <template>
-    <div class="container header flex mx-auto">
-            <Logo class="logo hy-auto flex h-20 w-20" />
-        <div class="user-header flex items-center gap-3">
-            <p class="user" >{{ user?.login }}</p>
-            <button @click="Logout()" class="logout_button">НА ВЫХОД</button>
+    <div class="header_wrapper">
+        <div class="container header flex mx-auto">
+                <Logo class="logo hy-auto flex h-20 w-20" />
+            <div class="user-header flex items-center gap-3">
+                <p class="user" >{{ user?.login }}</p>
+                <Button @click="Logout()" class=" dark">НА ВЫХОД</Button>
+            </div>
         </div>
     </div>
-    <hr/>
 </template>
 
 <script setup lang="ts">
@@ -30,6 +31,7 @@ const Logout = async () => {
         align-items: center
         justify-content: space-between
         padding: 0 1rem
+        border: 1px solid #e9e9e9
         .logo
             margin: 1rem 0
         .logout_button
@@ -42,4 +44,6 @@ const Logout = async () => {
                 border-color: #9909ba
                 color: white
                 background: #9909ba
+.header_wrapper
+    background-color: white
 </style>

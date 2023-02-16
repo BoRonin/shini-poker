@@ -1,5 +1,5 @@
 <template>
-    <div class="wrapper">
+    <div class="wrapper main-section">
         <div class="gamePlayers mt-10 flex ">
             <div class="user text-center" v-for="player, i in players" :key="player?.id">
                 <div class="icon mx-auto">
@@ -11,17 +11,17 @@
                 <div class="add_chips">
                     <button @click="addChips(player.id)" class="addChips">Добавить чипики</button>
                 </div>
-                <input id="overall_chips" name="overall_chips" type="number"
+                <input id="overall_chips" name="overall_chips" type="number" min="0"
                     class=" mt-5 relative block w-full appearance-none rounded-none border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-slate-700 focus:outline-none focus:ring-indigo-500 sm:text-sm"
-                    placeholder="Сколько всего фишек" v-model="players[i].chips_final" v-if="players !== null" />
+                    placeholder="Всего фишек" v-model="players[i].chips_final" v-if="players !== null" />
                 <div class="addChips win"><icons-plus height="3rem" width="3rem" @click="OpenWinOption(player.id)" />
                 </div>
                 <div class="Result" v-if="player.money !== undefined">
-                    Результат: {{ player.money }}
+                    Результат: <strong>{{ player.money }}</strong>
                 </div>
             </div>
             <Teleport to="body">
-                <transition name="page">
+                <transition name="element">
                     <div class="addWin " v-if="combinations !== null && !!setWin">
                         <div class="ForTheWin flex" ref="FTW">
                             <div class="icon mx-auto mb-10">
@@ -30,7 +30,8 @@
                             </div>
                             <div class="combinationBlock">
                                 <div class="combination" v-for="comb in combinations" :key="comb.id">
-                                    <Button @click="Setwin(comb.id, PlayerForWin?.id)">{{ comb.name }}</Button>
+                                    <Button class="dark" @click="Setwin(comb.id, PlayerForWin?.id)">{{
+                                        comb.name.toLocaleUpperCase() }}</Button>
                                 </div>
                             </div>
                         </div>
@@ -39,9 +40,9 @@
             </Teleport>
 
         </div>
-        <Button class="finishGameButton" @click="finishGame()">Закончить игру</Button>
+        <Button class="dark fit" @click="finishGame()">ЗАВЕРШИТЬ ИГРУ</Button>
         <div class="alert">{{ alert }}</div>
-    </div>
+</div>
 </template>
 <script setup lang="ts">
 import { PlayerForGame, Combination } from '~~/types/Game';
@@ -90,8 +91,20 @@ function OpenWinOption(id: number) {
         }
     })
     setWin.value = true
+    window.scrollTo(0, 0)
     onClickOutside(FTW, (e) => {
+        useHead({
+            bodyAttrs: {
+                class: "",
+            }
+        })
         setWin.value = false
+
+    })
+    useHead({
+        bodyAttrs: {
+            class: !!setWin.value ? "locked" : "",
+        }
     })
 }
 const finishGame = () => {
@@ -114,16 +127,16 @@ const finishGame = () => {
             credentials: 'include',
             body: body,
             method: 'POST',
-            onResponse({response }) {
+            onResponse({ response }) {
                 console.log(toRaw(response._data));
                 let results = toRaw(response._data)
-                results.forEach((res:any) => {
+                results.forEach((res: any) => {
                     players.value?.forEach(pl => {
-                      
+
                         if (pl.id === res.id) {
                             pl.money = res.score
                             console.log(pl.money);
-                            
+
                         }
                     });
                 });
@@ -134,6 +147,11 @@ const finishGame = () => {
 }
 function Setwin(cid: number, pid: number | undefined) {
     if ((typeof (pid) === 'number')) {
+        useHead({
+            bodyAttrs: {
+                class: "",
+            }
+        })
         setWin.value = false
         useFetch(config.BASE_URL + `admin/win/${pid}`, {
             body: {
@@ -145,6 +163,7 @@ function Setwin(cid: number, pid: number | undefined) {
         })
     }
 }
+
 </script>
 
 <style lang="sass" scoped>
@@ -176,7 +195,7 @@ function Setwin(cid: number, pid: number | undefined) {
     background-color: rgba(#333, .9)
     .ForTheWin
         background-color: white
-        padding: 5rem
+        padding: min(5rem, 5vw)
         display: grid
         // grid-auto-columns: 1fr, 1fr
         
@@ -187,7 +206,16 @@ function Setwin(cid: number, pid: number | undefined) {
             border-radius: 50%
     .combinationBlock
         display: grid
+        grid-auto-rows: 1fr
         grid-template-columns: 1fr 1fr
+        .combination
+            display: grid
             
-
+input
+    max-width: 10rem
+    &::placeholder
+        font-size: .8rem
+.user
+    max-width: 45%
+    margin-top: 2rem
 </style>
