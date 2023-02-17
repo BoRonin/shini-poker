@@ -111,7 +111,7 @@ const CreateGame = () => {
             setTimeout(()=>{
             navigateTo(`/games/${gameid}`)
 
-        }, 200)
+        }, 100)
             
         },
     })
@@ -168,6 +168,7 @@ const CreateGame = () => {
     margin: 5rem auto     
     flex-wrap: wrap      
     .user
+        user-select: none
         .icon
             border-radius: 50%
             border: 1px solid black

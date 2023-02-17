@@ -12,4 +12,5 @@
 <style lang="sass" scoped>
     svg 
         filter: drop-shadow(4px 4px 15px black)
+        user-select: none
 </style>

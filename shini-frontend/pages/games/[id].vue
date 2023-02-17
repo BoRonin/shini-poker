@@ -9,12 +9,12 @@
                 <p>{{ player.user_name }}</p>
                 <p>Чипиков: <span>{{ player.chips }}</span></p>
                 <div class="add_chips">
-                    <button @click="addChips(player.id)" class="addChips">Добавить чипики</button>
+                    <button @click="OpenWinOption(player.id, 1)" class="addChips">Добавить чипики</button>
                 </div>
                 <input id="overall_chips" name="overall_chips" type="number" min="0"
                     class=" mt-5 relative block w-full appearance-none rounded-none border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-slate-700 focus:outline-none focus:ring-indigo-500 sm:text-sm"
                     placeholder="Всего фишек" v-model="players[i].chips_final" v-if="players !== null" />
-                <div class="addChips win"><icons-plus height="3rem" width="3rem" @click="OpenWinOption(player.id)" />
+                <div class="addChips win"><icons-plus height="3rem" width="3rem" @click="OpenWinOption(player.id, 2)" />
                 </div>
                 <div class="Result" v-if="player.money !== undefined">
                     Результат: <strong>{{ player.money }}</strong>
@@ -28,12 +28,40 @@
                                 <Playerimage :source='`/images/${PlayerForWin?.login?.toLowerCase()}.jpg`'
                                     :alt='`${PlayerForWin?.user_name} куканит в покерямбе`' />
                             </div>
-                            <div class="combinationBlock">
-                                <div class="combination" v-for="comb in combinations" :key="comb.id">
-                                    <Button class="dark" @click="Setwin(comb.id, PlayerForWin?.id)">{{
-                                        comb.name.toLocaleUpperCase() }}</Button>
+                            <transition name="page" mode="out-in">
+                                <div class="combinationBlock" v-if="!assertWinChoice">
+                                    <div class="combination" v-for="comb in combinations" :key="comb.id">
+                                        <Button class="dark" @click="openAssertWinChoice(comb.name, comb.id, PlayerForWin?.id)">{{
+                                            comb.name.toLocaleUpperCase() }}</Button>
+                                    </div>
                                 </div>
+                                <div class="assertWin" v-else>
+                                    <p class="assert_question">{{ assertWinInfo.cname }}</p>
+                                    <Button class="dark" @click="Setwin(assertWinInfo.cid, assertWinInfo.pid)">Да</Button>
+                                    <Button class="dark" @click="assertWinChoice = !assertWinChoice">Назад</Button>
+                                </div>
+                            </transition>
+                        </div>
+                    </div>
+                </transition>
+            </Teleport>
+            <Teleport to="body">
+                <transition name="element">
+                    <div class="addWin " v-if="!!getChips">
+                        <div class="ForTheWin flex" ref="FTW">
+                            <div class="icon mx-auto mb-10">
+                                <Playerimage :source='`/images/${PlayerForWin?.login?.toLowerCase()}.jpg`'
+                                    :alt='`${PlayerForWin?.user_name} куканит в покерямбе`' />
                             </div>
+                            <transition name="page" mode="out-in">
+                                <div class="combinationBlock" v-if="!assertGetChips">
+                                    <p class="assert_question">Сколько добавляем чипиков?</p>
+                                    <div class="combination">
+                                        <Button class="dark" @click="addChips(PlayerForWin?.id, 50)">50</Button>
+                                        <Button class="dark" @click="addChips(PlayerForWin?.id, 100)">100</Button>
+                                    </div>
+                                </div>
+                            </transition>
                         </div>
                     </div>
                 </transition>
@@ -47,7 +75,6 @@
 <script setup lang="ts">
 import { PlayerForGame, Combination } from '~~/types/Game';
 import { onClickOutside } from '@vueuse/core'
-import { Body } from 'nuxt/dist/head/runtime/components';
 const setWin = ref(false)
 const PlayerForWin = ref<PlayerForGame>()
 const err = ref("")
@@ -55,6 +82,10 @@ const config = useAppConfig()
 const route = useRoute()
 const FTW = ref()
 const alert = ref("")
+const assertWinChoice = ref(false)
+const getChips = ref(false)
+const assertGetChips = ref(false)
+const assertWinInfo = ref<{cname: string, cid: number, pid: number}>({cid: 0, cname: "", pid: 0})
 const { data: players } = await useLazyFetch<PlayerForGame[]>(config.BASE_URL + `admin/getplayers/${route.params.id}`, {
     method: 'GET',
     credentials: 'include'
@@ -63,19 +94,33 @@ interface results {
     player: PlayerForGame,
     score: number,
 }
+let win = new Audio('/sounds/win.mp3')
+const openAssertWinChoice = (cname: string, cid: number, pid: number | undefined) =>{
+    if (pid != undefined){
+        assertWinInfo.value.cid = cid
+        assertWinInfo.value.pid = pid
+        assertWinInfo.value.cname = cname
+        console.log(assertWinInfo.value);
+        assertWinChoice.value = true
+    }
+}
+const addChips = (player_id: number | undefined, chips: number ) => {
+    if (chips !== undefined){
+        useFetch<PlayerForGame[]>(config.BASE_URL + `admin/addchips/${player_id}`, {
+            body: {
+                chips: chips.toString(),
+                game_id: route.params.id.toString(),
+            },
+            method: 'POST',
+            credentials: 'include',
+            async onResponse({ response }) {
+                players.value = response._data
+            }
+        })
+        win.play()
+        getChips.value = false
 
-const addChips = (player_id: number) => {
-    useFetch<PlayerForGame[]>(config.BASE_URL + `admin/addchips/${player_id}`, {
-        body: {
-            chips: "100",
-            game_id: route.params.id.toString(),
-        },
-        method: 'POST',
-        credentials: 'include',
-        async onResponse({ response }) {
-            players.value = response._data
-        }
-    })
+    }
 }
 const { data: combinations } = useLazyFetch<Combination[]>(config.BASE_URL + "admin/combinations", {
     credentials: 'include',
@@ -84,28 +129,47 @@ const { data: combinations } = useLazyFetch<Combination[]>(config.BASE_URL + "ad
         err.value = error.message
     }
 })
-function OpenWinOption(id: number) {
+function OpenWinOption(id: number, action: number) {
     players.value?.forEach(e => {
         if (e.id === id) {
             PlayerForWin.value = e
         }
     })
-    setWin.value = true
-    window.scrollTo(0, 0)
-    onClickOutside(FTW, (e) => {
+    if (action === 2) {
+        setWin.value = true
+        window.scrollTo(0, 0)
+        onClickOutside(FTW, (e) => {
+            useHead({
+                bodyAttrs: {
+                    class: "",
+                }
+            })
+            setWin.value = false
+    
+        })
         useHead({
             bodyAttrs: {
-                class: "",
+                class: !!setWin.value ? "locked" : "",
             }
         })
-        setWin.value = false
-
-    })
-    useHead({
-        bodyAttrs: {
-            class: !!setWin.value ? "locked" : "",
-        }
-    })
+    }
+    if (action === 1){
+        getChips.value = true
+        window.scrollTo(0, 0)
+        onClickOutside(FTW, (e) => {
+            useHead({
+                bodyAttrs: {
+                    class: "",
+                }
+            })
+            getChips.value = false
+        })
+        useHead({
+            bodyAttrs: {
+                class: !!setWin.value ? "locked" : "",
+            }
+        })
+    }
 }
 const finishGame = () => {
     let finalPlayers = new Map()
@@ -152,7 +216,9 @@ function Setwin(cid: number, pid: number | undefined) {
                 class: "",
             }
         })
+        win.play()
         setWin.value = false
+        assertWinChoice.value = false
         useFetch(config.BASE_URL + `admin/win/${pid}`, {
             body: {
                 game_id: route.params.id,
@@ -161,6 +227,7 @@ function Setwin(cid: number, pid: number | undefined) {
             credentials: 'include',
             method: 'POST',
         })
+
     }
 }
 
@@ -190,11 +257,13 @@ function Setwin(cid: number, pid: number | undefined) {
     display: grid
     place-items: center
     width: 100%
+    overflow-x: hidden
     // height: 100vh
     inset: 0
     background-color: rgba(#333, .9)
     .ForTheWin
         background-color: white
+        transition: all .2s ease-in
         padding: min(5rem, 5vw)
         display: grid
         // grid-auto-columns: 1fr, 1fr
