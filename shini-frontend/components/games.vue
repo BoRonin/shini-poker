@@ -7,10 +7,12 @@
             <li v-for="game in games" :key="game.id">
             <p class="section-subtitle">{{ game.title }}</p>
             <p> {{ getDate(game.created_at) }}<br />
-                {{ game.is_finished? "Игра закончена" : "Игра в процессе" }}</p>
+                <div v-if="!!game.is_finished" class="game-fit">Игра закончена</div>
+                <div v-else class="game-fit"><NuxtLink :to="`/games/${game.id}`" ><Button>Игра в процессе</Button></NuxtLink></div>
+                </p>
             </li>
         </ul>
-        <NuxtLink to="/games"><Button>Новая игра</Button></NuxtLink>
+        <NuxtLink to="/games"><Button class="dark left">Новая игра</Button></NuxtLink>
     </div>
 </template>
 <script setup lang="ts">
@@ -26,3 +28,7 @@
     return d.toLocaleString()
 }
 </script>
+<style lang="sass">
+.game-fit
+    width: fit-content
+</style>

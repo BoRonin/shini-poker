@@ -94,7 +94,7 @@ interface results {
     player: PlayerForGame,
     score: number,
 }
-let win = new Audio('/sounds/win.mp3')
+
 const openAssertWinChoice = (cname: string, cid: number, pid: number | undefined) =>{
     if (pid != undefined){
         assertWinInfo.value.cid = cid
@@ -105,7 +105,7 @@ const openAssertWinChoice = (cname: string, cid: number, pid: number | undefined
     }
 }
 const addChips = (player_id: number | undefined, chips: number ) => {
-    if (chips !== undefined){
+    if (player_id !== undefined){
         useFetch<PlayerForGame[]>(config.BASE_URL + `admin/addchips/${player_id}`, {
             body: {
                 chips: chips.toString(),
@@ -117,7 +117,7 @@ const addChips = (player_id: number | undefined, chips: number ) => {
                 players.value = response._data
             }
         })
-        win.play()
+        playAudio(player_id, "lose")
         getChips.value = false
 
     }
@@ -216,7 +216,7 @@ function Setwin(cid: number, pid: number | undefined) {
                 class: "",
             }
         })
-        win.play()
+        playAudio(pid, "win")
         setWin.value = false
         assertWinChoice.value = false
         useFetch(config.BASE_URL + `admin/win/${pid}`, {
@@ -230,7 +230,16 @@ function Setwin(cid: number, pid: number | undefined) {
 
     }
 }
-
+function playAudio(pid:number, wl: string){
+    players.value?.forEach(e => {
+        if (e.id === pid) {
+            const number = Math.floor(Math.random() * 4) + 1
+            const audio = new Audio(`/sounds/${e.login?.toLowerCase()}-${number}-${wl}.mp3`)
+            audio.play()
+            return
+        }
+    });
+}
 </script>
 
 <style lang="sass" scoped>
