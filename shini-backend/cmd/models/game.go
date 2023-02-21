@@ -62,6 +62,17 @@ func (g *Game) Finilize() error {
 	return nil
 }
 
+func (g *Game) IsFinished() error {
+	ctx, cancel := context.WithTimeout(context.Background(), postgres.DBTimeout)
+	defer cancel()
+	q := `select is_finished from game
+	where id = $1`
+	if err := postgres.DB.QueryRow(ctx, q, g.Id).Scan(&g.Finished); err != nil {
+		return err
+	}
+	return nil
+}
+
 func GetGames() ([]Game, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), postgres.DBTimeout)
 	defer cancel()

@@ -98,3 +98,20 @@ func GetGames(c *fiber.Ctx) error {
 	}
 	return c.JSON(games)
 }
+
+func IsGameFinished(c *fiber.Ctx) error {
+	gameId, err := strconv.Atoi(c.Params("id"))
+	if err != nil {
+		c.Status(fiber.StatusBadRequest)
+		return c.JSON(fiber.Map{
+			"message": "bad request",
+		})
+	}
+	game := new(models.Game)
+	game.Id = uint(gameId)
+	if err = game.IsFinished(); err != nil {
+		c.Status(fiber.StatusNotFound)
+		return c.JSON(err.Error())
+	}
+	return c.JSON(game.Finished)
+}

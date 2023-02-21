@@ -38,6 +38,7 @@ func main() {
 	logged.Get("/getplayers/:id", handlers.GetPlayers)
 	logged.Get("/combinations", handlers.GetCombinations)
 	logged.Get("/games", handlers.GetGames)
+	logged.Get("/games/isfinished/:id", handlers.IsGameFinished)
 
 	postgres.ConnectToDB()
 

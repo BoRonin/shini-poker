@@ -75,6 +75,9 @@
 <script setup lang="ts">
 import { PlayerForGame, Combination } from '~~/types/Game';
 import { onClickOutside } from '@vueuse/core'
+definePageMeta({
+  middleware: ["is-finished"]
+})
 const setWin = ref(false)
 const PlayerForWin = ref<PlayerForGame>()
 const err = ref("")

@@ -5,7 +5,7 @@
 </template>
 <script setup lang="ts">
 useHead({
-    title: "Shini Poker bro",
+    title: "Shini Poker",
     meta: [{
         name: 'description',
         content: 'Отлично все',
