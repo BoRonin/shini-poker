@@ -199,7 +199,6 @@ const finishGame = () => {
                 let results = toRaw(response._data)
                 results.forEach((res: any) => {
                     players.value?.forEach(pl => {
-
                         if (pl.id === res.id) {
                             pl.money = res.score
                             console.log(pl.money);

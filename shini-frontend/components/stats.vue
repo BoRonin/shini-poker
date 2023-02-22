@@ -12,9 +12,9 @@
                 <ul>
                     <li v-for="count in stat.name_count_stats" :key="count.combination">
                         <strong>{{ count.count }}</strong>: {{ count.combination }} 
-
                     </li>
                 </ul>
+
             </li>
         </ul>
     </div>

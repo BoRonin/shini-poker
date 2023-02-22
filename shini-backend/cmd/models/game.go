@@ -2,16 +2,18 @@ package models
 
 import (
 	"context"
+	"log"
 	"shini/storage/postgres"
 	"time"
 )
 
 type Game struct {
-	Id         uint      `json:"id"`
-	Title      string    `json:"title"`
-	CreatedAt  time.Time `json:"created_at,omitempty"`
-	Multiplier int       `json:"multiplier"`
-	Finished   bool      `json:"is_finished"`
+	Id         uint          `json:"id"`
+	Title      string        `json:"title"`
+	CreatedAt  time.Time     `json:"created_at,omitempty"`
+	Multiplier int           `json:"multiplier"`
+	Finished   bool          `json:"is_finished"`
+	Duration   time.Duration `json:"duration"`
 }
 
 func (g *Game) Create() error {
@@ -76,7 +78,7 @@ func (g *Game) IsFinished() error {
 func GetGames() ([]Game, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), postgres.DBTimeout)
 	defer cancel()
-	q := "select * from game"
+	q := "select * from game order by created_at"
 	rows, err := postgres.DB.Query(ctx, q)
 	if err != nil {
 		return nil, err
@@ -89,6 +91,22 @@ func GetGames() ([]Game, error) {
 		}
 		games = append(games, game)
 
+	}
+	q = `select age(wins.created_at, game.created_at) as duration from wins
+	join players on players.id = wins.player
+	join game on game.id = players.game_id
+	where game.id = $1
+	group by game.id, duration
+	order by duration desc
+	limit 1`
+	for i, v := range games {
+		if v.Finished {
+			if err := postgres.DB.QueryRow(ctx, q, v.Id).Scan(&games[i].Duration); err != nil {
+				log.Println(err)
+			}
+			games[i].Duration = time.Duration(games[i].Duration.Milliseconds())
+
+		}
 	}
 	return games, nil
 }

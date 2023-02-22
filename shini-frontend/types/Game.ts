@@ -3,7 +3,8 @@ export interface Game {
     title?: string,
     created_at: string,
     multiplier?: number,
-    is_finished?: boolean
+    is_finished?: boolean,
+    duration?: number
 }
 export interface Player{
     id: number,
