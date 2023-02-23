@@ -20,11 +20,11 @@ func AddChips(c *fiber.Ctx) error {
 		return c.JSON(err)
 	}
 	chips, _ := strconv.Atoi(data["chips"])
-	game_id, _ := strconv.Atoi(data["game_id"])
+	gameId, _ := strconv.Atoi(data["game_id"])
 	player := models.Player{
 		Id: uint(playerID),
 		Game: models.Game{
-			Id: uint(game_id),
+			Id: uint(gameId),
 		},
 	}
 	if err := player.AddChips(chips); err != nil {

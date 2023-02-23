@@ -18,7 +18,7 @@
                         </div>
                         </p>
                     </div>
-                    <div class="right" v-if="!!game.is_finished"><Button class="dark fit" @click="toggleModal()">Cтатистика
+                    <div class="right" v-if="!!game.is_finished"><Button class="dark fit" @click="toggleModal(game)">Cтатистика
                             игры</Button></div>
 
                 </div>
@@ -26,8 +26,17 @@
         </ul>
         <Teleport to="body">
             <transition name="element">
-                <Modalse v-if="modalOpen" @close="modalOpen = !modalOpen">
-                    <p>sd</p>
+                <Modalse v-if="modalOpen" @close="modalOpen = false">
+                    <p class="section-subtitle">{{ modalInfo.title }}</p>
+                    <p>Множитель: {{ modalInfo.multiplier }}</p>
+                    <p>{{ msToTime(modalInfo.duration) }}</p>
+                    <div class="stats" v-if="gStat !== null && gStat.length > 0">
+                        <div class="stat" v-for="stat in gStat" :key="stat.login">
+                            <Playerimage :source="`/images/${stat.login.toLowerCase()}.jpg`" :class="'small'" />
+                            <p>Рубликов: <strong>{{ stat.money }}</strong></p>
+                            <p>Побед: <strong>{{ stat.wins }}</strong></p>
+                        </div>
+                    </div>
                 </Modalse>
             </transition>
         </Teleport>
@@ -36,18 +45,39 @@
 </template>
 <script setup lang="ts">
 import { Game } from '@/types/Game'
-import { onClickOutside } from '@vueuse/core'
+interface player_stat {
+    id: number,
+    login: string,
+    money: number,
+    wins: number
+}
+
 const config = useAppConfig()
+const modalInfo = ref<Game>({id:0, created_at: ""})
 const modalOpen = ref(false)
+const gStat = ref<player_stat[]>([])
 const { data: games, error } = useLazyFetch<Game[]>(config.BASE_URL + "admin/games", {
     credentials: 'include',
     method: 'GET',
 })
+
 function getDate(s: string) {
     var d = new Date(s)
     return d.toLocaleString()
 }
-function toggleModal() {
+function toggleModal(game: Game) {
+    useFetch(config.BASE_URL + `admin/getstats/${game.id}`, {
+        credentials:'include',
+        method:'GET',
+        onResponseError(){
+            return
+        },
+        onResponse({response}){
+            console.log(response._data);
+            gStat.value = response._data.player_stats
+        }
+    })
+    modalInfo.value = game
     modalOpen.value = !modalOpen.value
 }
 function msToTime(s: number | undefined) {
@@ -90,9 +120,15 @@ function msToTime(s: number | undefined) {
 <style lang="sass">
 .game_info
     display: flex
-    flex-direction: column
+    flex-direction: row
+    align-items: flex-end
     justify-content: space-between
     margin: .5rem 0
 .game-fit
     width: fit-content
+.stats
+    display: flex
+    flex-wrap: wrap
+    justify-content: space-around
+    gap: 2rem
 </style>

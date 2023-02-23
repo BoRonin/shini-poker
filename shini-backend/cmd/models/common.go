@@ -6,8 +6,8 @@ import (
 )
 
 type Stat struct {
-	Chips_after int `json:"chips_after"`
-	Chips_taken int `json:"chips_taken"`
+	ChipsAfter int `json:"chips_after"`
+	ChipsTaken int `json:"chips_taken"`
 }
 type StatNameCount struct {
 	Combination string `json:"combination"`
@@ -37,7 +37,7 @@ func GetStats() ([]AllStats, error) {
 		newstat := new(Stat)
 		var name string
 		var login string
-		if err := rows.Scan(&name, &login, &newstat.Chips_after, &newstat.Chips_taken); err != nil {
+		if err := rows.Scan(&name, &login, &newstat.ChipsAfter, &newstat.ChipsTaken); err != nil {
 			return nil, err
 		}
 		allStats = append(allStats, AllStats{Username: name, Login: login, Stat: *newstat})

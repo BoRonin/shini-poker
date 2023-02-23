@@ -32,6 +32,7 @@ func main() {
 	logged.Post("/win/:id", handlers.Win)
 	logged.Post("/finishgame/:id", handlers.FinishGame)
 	logged.Get("/getstats", handlers.GetStats)
+	logged.Get("/getstats/:id", handlers.GetStatsById)
 	logged.Get("/users", handlers.GetUsers)
 	logged.Post("/creategame", handlers.CreateGame)
 	logged.Post("/addplayer/:id", handlers.AddPlayer)

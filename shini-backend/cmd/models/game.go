@@ -16,6 +16,17 @@ type Game struct {
 	Duration   time.Duration `json:"duration"`
 }
 
+type PlayersGameStat struct{
+    Id uint `json:"id"`
+    Login string `json:"login"`
+    Money int `json:"money"`
+    Wins int `json:"wins"`
+
+}
+type GameStatsById struct {
+    PlayerStats []PlayersGameStat `json:"player_stats"`
+}
+
 func (g *Game) Create() error {
 	ctx, cancel := context.WithTimeout(context.Background(), postgres.DBTimeout)
 	defer cancel()
@@ -74,7 +85,32 @@ func (g *Game) IsFinished() error {
 	}
 	return nil
 }
-
+func (g *Game)GetStats() (GameStatsById, error) {
+    ctx, cancel := context.WithTimeout(context.Background(), postgres.DBTimeout)
+    defer cancel()
+    q := `select users.id, users.login, coalesce((players.chips_final-players.chips)* game.multiplier, 0) as money, count(wins.id) as wins from users
+join players on players.user_id = users.id
+join wins on wins.player = players.id
+join game on players.game_id = game.id
+where game.id = $1
+group by users.id, users.login, money
+order by users.id
+`
+    rows, err := postgres.DB.Query(ctx, q, g.Id)
+    if err != nil {
+        return GameStatsById{}, err
+    }
+    var gameStat GameStatsById
+    for rows.Next(){
+        var playerStat PlayersGameStat
+        err := rows.Scan(&playerStat.Id, &playerStat.Login, &playerStat.Money, &playerStat.Wins)
+        if err != nil {
+            return GameStatsById{}, err
+        }
+        gameStat.PlayerStats = append(gameStat.PlayerStats, playerStat)
+    }
+    return gameStat, nil
+}
 func GetGames() ([]Game, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), postgres.DBTimeout)
 	defer cancel()

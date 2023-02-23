@@ -31,6 +31,20 @@ func CreateGame(c *fiber.Ctx) error {
 	return c.JSON(game)
 }
 
+func GetStatsById (c *fiber.Ctx) error {
+    gameId, err := strconv.Atoi(c.Params("id"))
+    if err != nil {
+        c.Status(fiber.StatusBadRequest)
+        return c.JSON(err.Error())
+    }
+    game := models.Game{Id: uint(gameId)}
+    stats, err := game.GetStats()
+    if err != nil {
+        c.Status(fiber.StatusBadRequest)
+        return c.JSON(err.Error())
+    }
+    return c.JSON(stats)
+}
 type PlayerScore struct {
 	models.Player
 	Score int `json:"score"`
