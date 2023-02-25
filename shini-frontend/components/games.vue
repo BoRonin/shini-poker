@@ -26,11 +26,11 @@
         </ul>
         <Teleport to="body">
             <transition name="element">
-                <Modalse v-if="modalOpen" @close="modalOpen = false">
+                <Modalse v-if="!!modalOpen && gStat !== null && gStat.length > 0 && !!showgames" @close="closeModal()">
                     <p class="section-subtitle">{{ modalInfo.title }}</p>
                     <p>Множитель: {{ modalInfo.multiplier }}</p>
                     <p>{{ msToTime(modalInfo.duration) }}</p>
-                    <div class="stats" v-if="gStat !== null && gStat.length > 0">
+                    <div class="stats" >
                         <div class="stat" v-for="stat in gStat" :key="stat.login">
                             <Playerimage :source="`/images/${stat.login.toLowerCase()}.jpg`" :class="'small'" />
                             <p>Рубликов: <strong>{{ stat.money }}</strong></p>
@@ -56,11 +56,15 @@ const config = useAppConfig()
 const modalInfo = ref<Game>({id:0, created_at: ""})
 const modalOpen = ref(false)
 const gStat = ref<player_stat[]>([])
+const showgames = ref(false)
 const { data: games, error } = useLazyFetch<Game[]>(config.BASE_URL + "admin/games", {
     credentials: 'include',
     method: 'GET',
 })
-
+const closeModal = () => {
+    showgames.value = false
+    modalOpen.value = false
+}
 function getDate(s: string) {
     var d = new Date(s)
     return d.toLocaleString()
@@ -76,6 +80,9 @@ function toggleModal(game: Game) {
             console.log(response._data);
             gStat.value = response._data.player_stats
         }
+    }).then(()=>{
+        showgames.value = true
+
     })
     modalInfo.value = game
     modalOpen.value = !modalOpen.value

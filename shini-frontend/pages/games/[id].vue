@@ -235,7 +235,19 @@ function Setwin(cid: number, pid: number | undefined) {
 function playAudio(pid:number, wl: string){
     players.value?.forEach(e => {
         if (e.id === pid) {
-            const number = Math.floor(Math.random() * 4) + 1
+            let number = Math.floor(Math.random() * 4) + 1
+            if (e.login?.toLowerCase() === "iteplov"){
+                if (wl === "win"){
+                    number = Math.floor(Math.random() * 37) + 1
+                } else {
+                    number = Math.floor(Math.random() * 8) + 1
+                }
+            }
+            if (e.login?.toLowerCase() === "yboronin"){
+                if (wl === "win"){
+                    number = Math.floor(Math.random() * 5) + 1
+                } 
+            }
             const audio = new Audio(`/sounds/${e.login?.toLowerCase()}-${number}-${wl}.mp3`)
             audio.play()
             return
