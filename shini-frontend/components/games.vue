@@ -85,7 +85,7 @@ function toggleModal(game: Game) {
 
     })
     modalInfo.value = game
-    modalOpen.value = !modalOpen.value
+    modalOpen.value = true
 }
 function msToTime(s: number | undefined) {
     if (s !== undefined) {

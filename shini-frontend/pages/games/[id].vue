@@ -248,6 +248,16 @@ function playAudio(pid:number, wl: string){
                     number = Math.floor(Math.random() * 5) + 1
                 } 
             }
+            if (e.login?.toLowerCase() === "iboronina"){
+                if (wl === "win"){
+                    number = Math.floor(Math.random() * 5) + 1
+                } 
+            }
+            if (e.login?.toLowerCase() === "nbadirova"){
+                if (wl === "win"){
+                    number = Math.floor(Math.random() * 6) + 1
+                } 
+            }
             const audio = new Audio(`/sounds/${e.login?.toLowerCase()}-${number}-${wl}.mp3`)
             audio.play()
             return
